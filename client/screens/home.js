@@ -1,50 +1,76 @@
 import React, { Component } from 'react';
-import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView } from 'react-native';
-import { Container, Content, Card, CardItem, Body, Item, Label, Input, Button, AsyncStorage } from 'native-base';
+import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView, AsyncStorage } from 'react-native';
+import { Container, Content, Card, CardItem, Body, Item, Label, Input, Button } from 'native-base';
 
 
-const API_URL = "http://192.168.100.5:8001/server/bingo";
+const API_URL = "http://192.168.100.3:3000/server/getMovie";
 
 export default class Register extends Component {
     constructor(props){
         super(props);
         this.state = {
+          peliculas: []
         };
+    }
+
+    componentDidMount(){
+      this.getData();
+    }
+
+    getData = () => {
+      const header = {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+
+      return fetch(API_URL, header)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({peliculas: responseJson});
+      })
+      .catch((err) => {
+        alert(err)
+      })
+
+    }
+
+    localStoragge = async (id) => {
+        try{
+            await AsyncStorage.setItem('id', id);
+        }
+        catch(error){
+            console.log(error);
+        }
+        this.props.navigation.push('Detalle');
+    }
+
+    navigateDetails = () => {
+
     }
 
     render() {
         return (
             <Container>
-                <ImageBackground source={require('../assets/img/background.jpg')} style={styles.container}>
-                <ScrollView>
-                    <Content contentContainerStyle={styles.content}>
-                        <Text style={styles.registrar1}>Peliculas en Taquilla</Text>
-                        <View style={styles.headerLeft, styles.titulo}>
-                    <TouchableOpacity onPress={()=>this.props.navigation.push('Detalle')}>
+              <ImageBackground source={require('../assets/img/background.jpg')} style={styles.container}>
+              <ScrollView>
+                <Content contentContainerStyle={styles.content}>
+                  <Text style={styles.registrar1}>Peliculas en Taquilla</Text>
+                  <View style={styles.headerLeft, styles.titulo}>
+                  {
+                    this.state.peliculas.map(item =>
+                      <TouchableOpacity onPress={() => this.localStoragge(item._id)}>
+                        <Text style={{color: 'white'}}>{item.titulo}</Text>
                         <Image source={require('../assets/img/joker.jpg')} style={styles.logo} />
-                    </TouchableOpacity>
-                    <Text>Joker</Text>
-                    <TouchableOpacity>
-                        <Image source={require('../assets/img/badBoys.jpg')} style={styles.logo1} />
-                    </TouchableOpacity>
-                    <Text>ToyStory4</Text>
-                    <TouchableOpacity>
-                        <Image source={require('../assets/img/jojo.jpg')} style={styles.logo2} />
-                    </TouchableOpacity>
-                    <Text>Dumbo</Text>
-                    <TouchableOpacity>
-                        <Image source={require('../assets/img/noche.jpg')} style={styles.logo3} />
-                    </TouchableOpacity>
-                    <Text>Glass</Text>
-                    <TouchableOpacity>
-                        <Image source={require('../assets/img/harleyQueen.jpg')} style={styles.logo4} />
-                    </TouchableOpacity>
-                    <Text>Detective Pikachu</Text>
-
-                </View>
-                    </Content>
-                    </ScrollView>
-                </ImageBackground>
+                      </TouchableOpacity>
+                    )
+                  }
+                  </View>
+                </Content>
+              </ScrollView>
+              </ImageBackground>
             </Container>
         );
     }
@@ -55,7 +81,7 @@ const styles = StyleSheet.create({
         width: '105%',
         height: '100%',
         position: 'relative',
-        right: '4%',  
+        right: '4%',
     },
     registrar1: {
         flex: 1,
@@ -142,5 +168,3 @@ const styles = StyleSheet.create({
         resizeMode: 'contain'
     }
 });
-
-

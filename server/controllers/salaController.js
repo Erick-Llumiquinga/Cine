@@ -4,7 +4,17 @@ const Sala = require('../models/salaModel');
 const routerApi = express.Router();
 const db = mongoose.connect('mongodb://localhost/Cine');
 
-routerApi.route('/newMovie')
+routerApi.route('/getSala')
+  .get((req,res) => {
+    Sala.find((err,resp) => {
+      if(err){
+        return res.send(err)
+      }
+      return res.json(resp)
+    })
+  })
+
+routerApi.route('/newSala')
   .post((req, res) => {
     let sala = new Sala(req.body)
 
@@ -16,7 +26,7 @@ routerApi.route('/newMovie')
     })
   });
 
-  routerApi.route('/updateMovie')
+  routerApi.route('/updateSala')
   .put((req, res) => {
 
     let id = req.body.id
@@ -31,7 +41,7 @@ routerApi.route('/newMovie')
     })
   });
 
-  routerApi.route('/deleteMovie')
+  routerApi.route('/deleteSala')
   .delete((req, res) => {
     let id = req.body.id
 

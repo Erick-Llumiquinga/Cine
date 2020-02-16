@@ -4,6 +4,16 @@ const Pelicula = require('../models/peliculaModel')
 const routerApi = express.Router();
 const db = mongoose.connect('mongodb://localhost/Cine');
 
+routerApi.route('/getMovie')
+  .get((req,res) => {
+    Pelicula.find((err,resp) => {
+      if(err){
+        return res.send(err)
+      }
+      return res.json(resp)
+    })
+  })
+
 routerApi.route('/newMovie')
   .post((req, res) => {
     let pelicula = new Pelicula(req.body)
@@ -45,4 +55,3 @@ routerApi.route('/newMovie')
 
 
 module.exports = routerApi;
-
