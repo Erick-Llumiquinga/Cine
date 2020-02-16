@@ -6,7 +6,8 @@ const db = mongoose.connect('mongodb://localhost/Cine');
 
 routerApi.route('/getSala')
   .get((req,res) => {
-    Sala.find((err,resp) => {
+    let id = req.query.id
+    Sala.findOne({'id': id},(err,resp) => {
       if(err){
         return res.send(err)
       }

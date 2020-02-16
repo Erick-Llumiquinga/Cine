@@ -3,17 +3,20 @@ import { Image, Modal, Text, TouchableHighlight, View, Alert, TextInput, FlatLis
 import {  Container, Header, Title, Button, Left, Right, Body, Icon, Spinner, Fab, Form   } from 'native-base';
 import { Table, Row, Rows,Cell, TableWrapper  } from 'react-native-table-component';
 
-const API_URL = "http://192.168.100.3:3000/server/getMovie";
-
 export default class Home extends Component{
     constructor(props) {
       super(props);
       this.state ={
-        id: ''
+        id: '',
+        peliculas: []
       }
     }
 
+
+
     componentDidMount(){
+      this.localStoragge();
+      this.getPeliculas();
     }
 
     localStoragge = async () =>{
@@ -37,6 +40,7 @@ export default class Home extends Component{
     }
 
     getPeliculas = () => {
+      const API_URL =`http://192.168.100.3:3000/server/getSala?id=${this.state.id}`;
       const header = {
         method: 'GET',
         headers: {
@@ -48,7 +52,8 @@ export default class Home extends Component{
       return fetch(API_URL, header)
       .then((response) => response.json())
       .then((responseJson) => {
-        this.setState({peliculas: responseJson});
+        
+        alert(JSON.stringfy(responseJson))
       })
       .catch((err) => {
         alert(err)
@@ -58,7 +63,6 @@ export default class Home extends Component{
     render() {
         return (
             <View >
-              <Button title="Presionar" onPress={() => this.localStoragge()}/>
               <Button title="Borra" onPress={() => this.deleteStoragge()}/>
             </View>
         )
