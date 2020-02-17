@@ -1,32 +1,46 @@
 import React, { Component } from 'react';
 import { Image, Modal, Text, TouchableHighlight, View, Alert, TextInput, FlatList, StyleSheet, ImageBackground, AsyncStorage,TouchableOpacity } from 'react-native';
-import {  Container, Header, Title, Button, Left, Right, Body, Icon, Spinner, Fab, Form   } from 'native-base';
-import { Table, Row, Rows,Cell, TableWrapper  } from 'react-native-table-component';
-
+import {  Container, Content, Header, Title, Button, Left, Right, Body, Icon, Spinner, Fab, Form,Card,CardItem,Thumbnail   } from 'native-base';
 export default class Home extends Component{
     constructor(props) {
       super(props);
       this.state ={
         id: '',
-        peliculas: []
+        dataTemporal: {},
+        data: {
+          titulo: '',
+          img: '',
+          sinopsis: '',
+          sala: '',
+          descripcion: '',
+          horario: '',
+          precio: '',
+          numBoletos: '',
+          datosPersonales: []
+        }
       }
     }
 
-
-
     componentDidMount(){
       this.localStoragge();
-      this.getPeliculas();
     }
 
     localStoragge = async () =>{
         try{
-             this.setState({id: await AsyncStorage.getItem('id')});
+             /*this.setState({id: await AsyncStorage.multiGet(keys, (err, res) => {
+               res.forEach((item) => {
+                 alert(item)
+               });
+
+             })});*/
+        await  AsyncStorage.multiGet(['id', 'datos']).then((value) => {
+          alert(JSON.stringify(value))
+        })
         }
         catch(error){
             console.log(error)
         }
-        alert(this.state.id)
+        this.getPeliculas();
     }
 
     deleteStoragge = async () =>{
@@ -52,19 +66,43 @@ export default class Home extends Component{
       return fetch(API_URL, header)
       .then((response) => response.json())
       .then((responseJson) => {
-        
-        alert(JSON.stringfy(responseJson))
+
+        //alert(JSON.stringify(this.state.id))
       })
       .catch((err) => {
-        alert(err)
+
       })
     }
 
     render() {
         return (
-            <View >
-              <Button title="Borra" onPress={() => this.deleteStoragge()}/>
-            </View>
+          <Container>
+           <Content>
+             <Card style={{flex: 0}}>
+               <CardItem>
+                 <Left>
+                   <Body>
+                     <Text>{this.state.data.titulo}</Text>
+                   </Body>
+                 </Left>
+               </CardItem>
+               <CardItem>
+                 <Body>
+                   <Image source={{uri: 'Image URL'}} style={{height: 200, width: 200, flex: 1}}/>
+                   <Text>{this.state.data.sinopsis}</Text>
+                 </Body>
+               </CardItem>
+               <CardItem>
+                 <Left>
+                   <Button transparent textStyle={{color: '#87838B'}} onPress={this.deleteStoragge}>
+                     <Icon name="logo-github" />
+                     <Text>Pedir</Text>
+                   </Button>
+                 </Left>
+               </CardItem>
+             </Card>
+           </Content>
+          </Container>
         )
     }
 }

@@ -39,16 +39,12 @@ export default class Register extends Component {
 
     localStoragge = async (id) => {
         try{
-            await AsyncStorage.setItem('id', id);
+            await AsyncStorage.multiSet([['id', JSON.parse(id)._id], ['datos', id]]);
         }
         catch(error){
             console.log(error);
         }
         this.props.navigation.push('Detalle');
-    }
-
-    navigateDetails = () => {
-
     }
 
     render() {
@@ -61,7 +57,7 @@ export default class Register extends Component {
                   <View style={styles.headerLeft, styles.titulo}>
                   {
                     this.state.peliculas.map(item =>
-                      <TouchableOpacity onPress={() => this.localStoragge(item._id)}>
+                      <TouchableOpacity onPress={() => this.localStoragge(JSON.stringify(item))}>
                         <Text style={{color: 'white'}}>{item.titulo}</Text>
                         <Image source={require('../assets/img/joker.jpg')} style={styles.logo} />
                       </TouchableOpacity>

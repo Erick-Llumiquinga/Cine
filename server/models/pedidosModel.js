@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const salasModel = new Schema(
+const pedidosModel = new Schema(
   {
     nombre: {type: String},
     descripcion: {type: String},
@@ -11,4 +11,4 @@ const salasModel = new Schema(
   }
 );
 
-module.exports = mongoose.model('salas', salasModel);
+module.exports = mongoose.model('pedidos', pedidosModel);
