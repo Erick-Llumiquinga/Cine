@@ -6,15 +6,15 @@ export default class Titulo extends Component {
         super();
         this.state = {
             titulo: "",
-            categoria: "",
-            precio: "",
+            categorias: ['Accion','Drama','Comedia','Terror','Animado'],
+            valorBoleto: 0,
             resumen: "",
             foto: null
         }
     }
 
     enviar() {
-        let url = "http://localhost:3001/peliculas";
+        let url = "http://localhost:3001/server/newMovie";
         let data = this.state;
         fetch(url, {
             method: 'POST',

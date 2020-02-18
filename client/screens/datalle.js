@@ -7,40 +7,33 @@ export default class Home extends Component{
       this.state ={
         id: '',
         dataTemporal: {},
-        data: {
-          titulo: '',
-          img: '',
-          sinopsis: '',
-          sala: '',
-          descripcion: '',
-          horario: '',
-          precio: '',
-          numBoletos: '',
-          datosPersonales: []
-        }
+        titulo: '',
+        img: '',
+        sinopsis: '',
+        sala: '',
+        descripcion: '',
+        horario: '',
+        precio: '',
+        numBoletos: '',
+        datosPersonales: []
       }
     }
 
     componentDidMount(){
       this.localStoragge();
+      this.getPeliculas();
     }
 
     localStoragge = async () =>{
         try{
-             /*this.setState({id: await AsyncStorage.multiGet(keys, (err, res) => {
-               res.forEach((item) => {
-                 alert(item)
-               });
-
-             })});*/
-        await  AsyncStorage.multiGet(['id', 'datos']).then((value) => {
-          alert(JSON.stringify(value))
+          await  AsyncStorage.multiGet(['id', 'datos']).then((value) => {
+            this.setState({id: value[0][1], dataTemporal: value[1][1]});
         })
         }
         catch(error){
             console.log(error)
         }
-        this.getPeliculas();
+
     }
 
     deleteStoragge = async () =>{
@@ -66,11 +59,17 @@ export default class Home extends Component{
       return fetch(API_URL, header)
       .then((response) => response.json())
       .then((responseJson) => {
+        this.setState({
+          sala: JSON.stringify(responseJson).nombre,
+          descripcion: JSON.stringify(responseJson).descripcion,
+          horario: JSON.stringify(responseJson).horario,
+          titulo: JSON.stringify(responseJson).horario,
 
-        //alert(JSON.stringify(this.state.id))
+        })
+
       })
       .catch((err) => {
-
+        alert(err)
       })
     }
 
@@ -82,19 +81,19 @@ export default class Home extends Component{
                <CardItem>
                  <Left>
                    <Body>
-                     <Text>{this.state.data.titulo}</Text>
+                     <Text>{this.state.titulo}</Text>
                    </Body>
                  </Left>
                </CardItem>
                <CardItem>
                  <Body>
                    <Image source={{uri: 'Image URL'}} style={{height: 200, width: 200, flex: 1}}/>
-                   <Text>{this.state.data.sinopsis}</Text>
+                   <Text>{this.state.sinopsis}</Text>
                  </Body>
                </CardItem>
                <CardItem>
                  <Left>
-                   <Button transparent textStyle={{color: '#87838B'}} onPress={this.deleteStoragge}>
+                   <Button transparent textStyle={{color: '#87838B'}} onPress={() => this.props.navigation.push('Home')}>
                      <Icon name="logo-github" />
                      <Text>Pedir</Text>
                    </Button>
@@ -248,7 +247,6 @@ const styles = StyleSheet.create({
     input1: {
         color: '#EFFBF8',
         fontSize: 25,
-        fontFamily: 'bin-font',
     },
     modal_position: {
         position: 'absolute',

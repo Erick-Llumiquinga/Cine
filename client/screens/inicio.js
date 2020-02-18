@@ -18,7 +18,7 @@ export default class Login extends Component {
             <Container>
                 <ImageBackground source={require('../assets/img/backgorund.jpg')} style={styles.container}>
                     <Content contentContainerStyle={styles.content}>
-                        <Text style={styles.bingo1}>Cinema</Text>    
+                        <Text style={styles.bingo1}>Cinema</Text>
                         <Button rounded style={styles.btn} onPress={() => this.props.navigation.push('Home')}>
                             <Text style={styles.txt} >Empezar</Text>
                         </Button>
@@ -34,13 +34,12 @@ const styles = StyleSheet.create({
         width: '105%',
         height: '100%',
         position: 'relative',
-        right: '4%',   
+        right: '4%',
     },
     bingo1: {
         flex: 1,
         width: '100%' ,
         marginTop: '21%',
-        fontFamily: 'bin-font',
         fontSize: 60,
         marginLeft: '24%',
         color: '#EFFBF8',

@@ -22,15 +22,15 @@ export default class Salas extends Component {
                 [name]: value
             })
         }
-    
+
         componentDidMount(){
             this.getSalas();
         }
-    
+
         agregarSala(e){
             e.preventDefault();
             if(this.state._id){
-                fetch(`http://localhost:3001/salas/${this.state._id}`, {
+                fetch(`http://localhost:3001/server/newMovie${this.state._id}`, {
                     method: 'PUT',
                     body: JSON.stringify({
                         nombre: this.state.nombre,
@@ -49,7 +49,7 @@ export default class Salas extends Component {
                       this.getSalas();
                     });
             }else {
-                fetch("http://localhost:3001/salas", {
+                fetch("http://localhost:3001/server/newMovie", {
                     method: 'POST',
                     body: JSON.stringify(this.state),
                     headers: {
@@ -61,24 +61,24 @@ export default class Salas extends Component {
                 .then(data => {
                     console.log(data)
                     alert('Se guardo correctamente')
-                    this.setState({nombre: '', descripcion: '', horario: '', pelicula: ''});
+                    this.setState({nombre: '', descripcion: '', horario: '', idPelicula: ''});
                     this.getSalas();
                 })
                 .catch(err => console.error(err));
-                
+
                 }
             }
-           
-    
+
+
         getSalas(){
-            fetch('http://localhost:3001/salas')
+            fetch('http://localhost:3001/server/getMovie')
             .then(res => res.json())
             .then(data => {
                 this.setState({salas: data});
                 console.log(this.state.salas);
             });
         }
-    
+
         editarSala(id) {
             fetch(`http://localhost:3001/salas/${id}`)
               .then(res => res.json())
@@ -93,7 +93,7 @@ export default class Salas extends Component {
                 });
             });
         }
-    
+
         eliminarSala(id){
             fetch(`http://localhost:3001/salas/${id}`, {
                 method: 'DELETE',
@@ -108,10 +108,10 @@ export default class Salas extends Component {
                 alert('Se elimimo correctamente')
                 this.getSalas();
             });
-    
+
     }
 
-    
+
     render() {
         return (
             <div class="flex  px-10 py-2">
@@ -152,14 +152,14 @@ export default class Salas extends Component {
                                 </button>
                             </div>
                             <div class="text-gray-300  px-2 py-10 m-0"></div>
-                            
+
                         </div>
                         </form>
                 </div>
                 <div class="flex-1 text-gray-700 text-center bg-white px-4 py-2 ">
                         <table class=" text-left  border-collapse">
                             <thead class="bg-gray-400 rounded  ">
-                                
+
                                 <tr>
                                     <th class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">NOMBRE</th>
                                     <th class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm text-grey-dark border-b border-grey-light">DESCRIPCION</th>
@@ -197,11 +197,9 @@ export default class Salas extends Component {
                                 </tbody>
                         </table>
                     </div>
-                
+
             </div>
-        
+
         );
     }
 }
-
-

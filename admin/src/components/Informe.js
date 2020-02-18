@@ -7,8 +7,8 @@ export default class Informe extends Component {
         super();
         this.state = {
             titulo: '',
-            categoria: '',
-            precio: '',
+            categorias: '',
+            valorBoleto: 0,
             resumen: '',
             file: '',
             _id: '',
@@ -24,7 +24,7 @@ export default class Informe extends Component {
         this.setState({
             [name]: value
         });
-        
+
     }
 
     onFileChange(e) {
@@ -58,8 +58,8 @@ export default class Informe extends Component {
                   this.getPeliculas();
                 });
         }else {
-            
-            fetch("http://localhost:3001/peliculas", {
+
+            fetch("http://localhost:3001/server/newMovie", {
                 method: 'POST',
                 body: JSON.stringify(this.state),
                 headers: {
@@ -75,14 +75,14 @@ export default class Informe extends Component {
                 this.getPeliculas();
             })
             .catch(err => console.error(err));
-    
-            
+
+
             }
         }
-       
+
 
     getPeliculas(){
-        fetch('http://localhost:3001/peliculas')
+        fetch('http://localhost:3001/server/getMovie')
         .then(res => res.json())
         .then(data => {
             this.setState({peliculas: data});
@@ -123,17 +123,17 @@ export default class Informe extends Component {
     }
 
 
-    
-    
+
+
     render() {
         return (
 
             <div class="flex flex-col ">
                 <div class=" px-4 py-2 m-2">
                    <div class="bg-green-300 shadow-md rounded px-10 pt-4 pb-10 mb-30 flex flex-col my-150">
-                
+
                     <form onSubmit={this.agregarPelicula}>
-                    <div class="-mx-3 md:flex mb-9" > 
+                    <div class="-mx-3 md:flex mb-9" >
                             <div class="md:w-1/3 px-3 py-3 mb-6 md:mb-0">
                                 <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" >
                                     TITULO PELICULA
@@ -180,7 +180,7 @@ export default class Informe extends Component {
                 </div>
 
                 </div>
-                
+
                 <div class=" px-4 py-2 m-2">
                 <div class="flex justify-between ">
                     <div class=" px-4 py-2 m-2"></div>
@@ -230,16 +230,15 @@ export default class Informe extends Component {
                     </div>
                     <div class=" py-2 m-2"></div>
                 </div>
-               
+
                 </div>
            </div>
-            
-                
-                
-                
-          
-        
+
+
+
+
+
+
         );
     }
 }
-
