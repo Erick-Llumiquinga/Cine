@@ -6,14 +6,24 @@ const db = mongoose.connect('mongodb://localhost/Cine');
 
 routerApi.route('/getSala')
   .get((req,res) => {
-    let id = req.query.id
-    Sala.findOne({'idPelicula': id},(err,resp) => {
+    Sala.find((err,resp) => {
       if(err){
         return res.send(err)
       }
       return res.json(resp)
     })
   })
+
+  routerApi.route('/getSalaId')
+    .get((req,res) => {
+      let id = req.query.id
+      Sala.findOne({'idPelicula': id},(err,resp) => {
+        if(err){
+          return res.send(err)
+        }
+        return res.json(resp)
+      })
+    })
 
 routerApi.route('/newSala')
   .post((req, res) => {

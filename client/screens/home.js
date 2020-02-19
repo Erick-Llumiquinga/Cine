@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView, AsyncStorage } from 'react-native';
 import { Container, Content, Card, CardItem, Body, Item, Label, Input, Button } from 'native-base';
-
-
-const API_URL = "http://192.168.100.3:3000/server/getMovie";
+import { Buffer } from 'buffer';
+import base64 from 'react-native-base64'
 
 export default class Register extends Component {
     constructor(props){
         super(props);
         this.state = {
-          peliculas: []
+          id: [],
+          peliculas: [],
+          salas: []
         };
     }
 
@@ -18,6 +19,37 @@ export default class Register extends Component {
     }
 
     getData = () => {
+
+      const API_URL = `http://192.168.100.3:3001/server/getSala`;
+      const header = {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+
+      return fetch(API_URL, header)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({salas: responseJson})
+        responseJson.forEach((item, i) => {
+            this.state.id.push(item.idPelicula)
+        });
+        this.getPeliculas()
+      })
+      .catch((err) => {
+        alert(err)
+      })
+
+    }
+
+    getPeliculas =  () => {
+
+      let idEncode = Buffer(JSON.stringify(this.state.id)).toString('base64');
+
+      const API_URL = `http://192.168.100.3:3001/server/getMovieId?id=${idEncode}`;
+
       const header = {
         method: 'GET',
         headers: {
@@ -39,7 +71,7 @@ export default class Register extends Component {
 
     localStoragge = async (id) => {
         try{
-            await AsyncStorage.multiSet([['id', JSON.parse(id)._id], ['datos', id]]);
+            await AsyncStorage.multiSet([['id', JSON.parse(id)._id], ['datos', id], ['salas', this.state.salas]]);
         }
         catch(error){
             console.log(error);
@@ -59,7 +91,7 @@ export default class Register extends Component {
                     this.state.peliculas.map(item =>
                       <TouchableOpacity onPress={() => this.localStoragge(JSON.stringify(item))}>
                         <Text style={{color: 'white'}}>{item.titulo}</Text>
-                        <Image source={require('../assets/img/joker.jpg')} style={styles.logo} />
+                        <Image source={item.foto} style={styles.logo} />
                       </TouchableOpacity>
                     )
                   }

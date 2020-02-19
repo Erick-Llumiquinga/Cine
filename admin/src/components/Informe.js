@@ -8,7 +8,7 @@ export default class Informe extends Component {
         this.state = {
             titulo: '',
             categorias: '',
-            valorBoleto: 0,
+            valorBoleto: '',
             resumen: '',
             foto: '',
             _id: '',
@@ -86,7 +86,7 @@ export default class Informe extends Component {
             .then(data => {
                 console.log(data)
                 alert('Se guardo correctamente')
-                this.setState({titulo: '', categoria: '', precio: '', resumen: '', file: ''});
+                this.setState({titulo: '', categoria: '', valorBoleto: '', resumen: '', foto: ''});
                 this.getPeliculas();
             })
             .catch(err => console.error(err));
@@ -100,48 +100,47 @@ export default class Informe extends Component {
         .then(res => res.json())
         .then(data => {
             this.setState({peliculas: data});
-            console.log(data)
+            if(localStorage.getItem('datos'.length) == 0){
+              this.setPeliculas(JSON.stringify(data))
+            }
+            else{
+              localStorage.clear()
+              this.setPeliculas(JSON.stringify(data))
+            }
         });
     }
 
     editarPelicula(id) {
       let header = {
-        method: 'POST',
-        body: JSON.stringify({
-          titulo: this.state.titulo,
-          categorias: this.state.categorias,
-          valorBoleto: this.state.valorBoleto,
-          resumen: this.state.resumen,
-          foto: this.state.foto
-        }),
+        method: 'PUT',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          categorias: this.state.categorias,
+          valorBoleto: this.state.valorBoleto,
+          resumen: this.state.resumen,
+          id: id
+        })
       }
-        fetch(`http://localhost:3001/server/updateMovie`, {})
+        fetch(`http://localhost:3001/server/updateMovie`, header)
           .then(res => res.json())
           .then(data => {
-            console.log(data);
-            this.setState({
+          /*  this.setState({
               titulo: this.state.titulo,
               categorias: this.state.categorias,
               valorBoleto: this.state.valorBoleto,
               resumen: this.state.resumen,
-              foto: this.state.foto,
-              _id: data._id
-            });
+              foto: this.state.foto
+            });*/
+            this.setState({titulo: '', categoria: '', valorBoleto: '', resumen: '', foto: ''});
+            alert('Se actualizó correctamente');
+            this.getPeliculas();
           });
       }
 
     eliminarPelicula(id){
-      // this.state.peliculas.forEach((item, i) => {
-      //   if(id == item._id){
-      //     console.log(i)
-      //
-      //   }
-      // });
-
         fetch(`http://localhost:3001/server/deleteMovie`, {
             method: 'DELETE',
             headers: {
@@ -158,6 +157,15 @@ export default class Informe extends Component {
             alert('Se elimimo correctamente')
             this.getPeliculas();
         });
+    }
+
+    async setPeliculas(datos){
+      try {
+        await localStorage.setItem('datos', datos)
+      }
+      catch(err){
+        console.log(err)
+      }
     }
 
     render() {
@@ -192,7 +200,7 @@ export default class Informe extends Component {
                                 <label class="block uppercase tracking-wide text-black-darker text-xs font-bold mb-2" >
                                     PRECIO BOLETO
                             </label>
-                                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4 mb-3" type="text" name="precio" onChange={this.handleChange} value={this.state.precio}  placeholder="Ingrese Precio" />
+                                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-red rounded py-3 px-4 mb-3" type="text" name="valorBoleto" onChange={this.handleChange} value={this.state.valorBoleto}  placeholder="Ingrese Precio" />
                             </div>
                             </div>
                         <div>
@@ -246,7 +254,16 @@ export default class Informe extends Component {
                                         return (
                                         <tr key={pelicula._id}>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{pelicula.titulo}</td>
-                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><input onChange={this.handleChange} value={this.state.categorias} name="categorias" placeholder={pelicula.categorias}></input></td>
+                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">
+                                            <select  name="categorias" onChange={this.handleChange}>
+                                              <option value={pelicula.categorias} >{pelicula.categorias}</option>
+                                              {
+                                                this.state.categoriasArray.map(item => { return(
+                                                  <option value={item}>{item}</option>
+                                                )})
+                                              }
+                                            </select>
+                                            </td>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><input onChange={this.handleChange} value={this.state.valorBoleto} name="valorBoleto" placeholder={`$${pelicula.valorBoleto}`}></input></td>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><input onChange={this.handleChange} value={this.state.resumen} name="resumen" placeholder={pelicula.resumen}></input></td>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><img className="h-auto w-full" src={pelicula.foto} /></td>

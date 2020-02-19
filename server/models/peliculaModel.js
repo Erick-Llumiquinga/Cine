@@ -8,7 +8,7 @@ const peliculasModel = new Schema(
     titulo: {type: String},
     resumen: {type: String},
     categorias: {type: String},
-    valorBoleto: {type: Number}
+    valorBoleto: {type: String}
   }
 );
 
