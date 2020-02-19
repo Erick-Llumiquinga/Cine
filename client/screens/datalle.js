@@ -15,25 +15,25 @@ export default class Home extends Component{
         horario: '',
         precio: '',
         numBoletos: '',
-        datosPersonales: []
+        datosPersonales: [],
+        datosSala:[]
       }
     }
 
     componentDidMount(){
       this.localStoragge();
-      this.getPeliculas();
     }
 
     localStoragge = async () =>{
         try{
-          await  AsyncStorage.multiGet(['id', 'datos']).then((value) => {
-            this.setState({id: value[0][1], dataTemporal: value[1][1]});
+          await  AsyncStorage.multiGet(['salas', 'datos', 'id']).then((value) => {
+            this.setState({datosSala: value[0][1], dataTemporal: value[1][1], id: value[2][1]});
         })
         }
         catch(error){
             console.log(error)
         }
-
+        this.getPeliculas();
     }
 
     deleteStoragge = async () =>{
@@ -47,30 +47,35 @@ export default class Home extends Component{
     }
 
     getPeliculas = () => {
-      const API_URL =`http://192.168.100.3:3000/server/getSala?id=${this.state.id}`;
-      const header = {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
+      let datos = JSON.parse(this.state.datosSala)
+      let datosPelicula = JSON.parse(this.state.dataTemporal)
+      datos.forEach((item) => {
+        if(this.state.id == item.idPelicula){
+          this.setState({sala: item.nombre, descripcion: item.descripcion, horario: item.horario});
         }
-      }
+      });
 
-      return fetch(API_URL, header)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          sala: JSON.stringify(responseJson).nombre,
-          descripcion: JSON.stringify(responseJson).descripcion,
-          horario: JSON.stringify(responseJson).horario,
-          titulo: JSON.stringify(responseJson).horario,
+        this.setState({titulo: datosPelicula.titulo, img: datosPelicula.foto, sinopsis: datosPelicula.resumen, precio: datosPelicula.valorBoleto});
 
-        })
 
-      })
-      .catch((err) => {
-        alert(err)
-      })
+
+      // return fetch(API_URL, header)
+      // .then((response) => response.json())
+      // .then((responseJson) => {
+      //   this.setState({
+      //     sala: JSON.stringify(responseJson).nombre,
+      //     descripcion: JSON.stringify(responseJson).descripcion,
+      //     horario: JSON.stringify(responseJson).horario,
+      //     titulo: JSON.stringify(responseJson).horario,
+      //
+      //   })
+      //
+      //   console.log(this.state)
+      //
+      // })
+      // .catch((err) => {
+      //   alert(err)
+      // })
     }
 
     render() {
@@ -87,17 +92,19 @@ export default class Home extends Component{
                </CardItem>
                <CardItem>
                  <Body>
-                   <Image source={{uri: 'Image URL'}} style={{height: 200, width: 200, flex: 1}}/>
+                   <Image source={{uri: this.state.img}} style={{height: 200, width: 200, flex: 1}}/>
                    <Text>{this.state.sinopsis}</Text>
                  </Body>
                </CardItem>
                <CardItem>
-                 <Left>
-                   <Button transparent textStyle={{color: '#87838B'}} onPress={() => this.props.navigation.push('Home')}>
-                     <Icon name="logo-github" />
+               <Body>
+                <Text>{this.state.horario}</Text>
+               </Body>
+                 <Right>
+                   <Button  textStyle={{color: '#87838B'}} onPress={() => this.props.navigation.push('Home')}>
                      <Text>Pedir</Text>
                    </Button>
-                 </Left>
+                 </Right>
                </CardItem>
              </Card>
            </Content>

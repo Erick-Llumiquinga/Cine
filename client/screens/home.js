@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView, AsyncStorage } from 'react-native';
+import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView, AsyncStorage, } from 'react-native';
 import { Container, Content, Card, CardItem, Body, Item, Label, Input, Button } from 'native-base';
 import { Buffer } from 'buffer';
 import base64 from 'react-native-base64'
@@ -71,11 +71,12 @@ export default class Register extends Component {
 
     localStoragge = async (id) => {
         try{
-            await AsyncStorage.multiSet([['id', JSON.parse(id)._id], ['datos', id], ['salas', this.state.salas]]);
+            await AsyncStorage.multiSet([['salas', JSON.stringify(this.state.salas)], ['datos', id], ['id', JSON.parse(id)._id]]);
         }
         catch(error){
             console.log(error);
         }
+        //console.log(JSON.stringify(this.state.salas))
         this.props.navigation.push('Detalle');
     }
 
@@ -89,9 +90,9 @@ export default class Register extends Component {
                   <View style={styles.headerLeft, styles.titulo}>
                   {
                     this.state.peliculas.map(item =>
-                      <TouchableOpacity onPress={() => this.localStoragge(JSON.stringify(item))}>
+                      <TouchableOpacity onPress={() => this.localStoragge(JSON.stringify(item))} key={item._id}>
                         <Text style={{color: 'white'}}>{item.titulo}</Text>
-                        <Image source={item.foto} style={styles.logo} />
+                        <Image source={{uri: item.foto}} style={styles.logo} />
                       </TouchableOpacity>
                     )
                   }

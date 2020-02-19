@@ -5,25 +5,22 @@ const routerApi = express.Router();
 const db = mongoose.connect('mongodb://localhost/Cine');
 const base644 = require('base64-arraybuffer');
 
-let dataTemporal = [];
+
 routerApi.route('/getMovieId')
   .get((req,res) => {
     let idBase64 = req.query.id;
     let buff = str => JSON.parse(new Buffer(str,'base64').toString('utf-8'));
     let id = buff(idBase64)
 
+    let dataTemporal = [];
 
-
-    id.forEach((item) => {
-      Pelicula.findOne({"_id": item}, (err,resp) => {
-        if(err){
-          return res.send(err)
-        }
-          dataTemporal = [resp]
-      });
+    Pelicula.find({"_id": id}, (err,resp) => {
+      if(err){
+        return res.send(err)
+      }
+          return res.json(resp)
+    });
   });
-  return res.json(JSON.stringify(dataTemporal))
-});
 
 routerApi.route('/getMovie')
   .get((req,res) => {
