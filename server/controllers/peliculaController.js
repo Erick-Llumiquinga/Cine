@@ -29,7 +29,7 @@ routerApi.route('/newMovie')
   routerApi.route('/updateMovie')
   .put((req, res) => {
 
-    let id = req.body.id
+    let id = req.body._id
     let Query  = req.body
 
     Pelicula.updateOne({'_id': id}, Query , (err,resp) => {

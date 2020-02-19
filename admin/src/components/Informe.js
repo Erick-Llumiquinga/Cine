@@ -10,9 +10,10 @@ export default class Informe extends Component {
             categorias: '',
             valorBoleto: 0,
             resumen: '',
-            file: '',
+            foto: '',
             _id: '',
-            peliculas: []
+            peliculas: [],
+            categoriasArray: ['Acción','Animado','Aventura','Ciencia Ficción','Comedia','Drama','Terror']
         };
         this.handleChange = this.handleChange.bind(this);
         this.agregarPelicula = this.agregarPelicula.bind(this);
@@ -24,11 +25,19 @@ export default class Informe extends Component {
         this.setState({
             [name]: value
         });
-
     }
 
-    onFileChange(e) {
-        this.setState({ file: e.target.files[0] })
+    onFileChange(e){
+      let file = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.setState({ foto: reader.result })
+      }
+      reader.onerror = (error) => {
+        console.log(error);
+      }
+
     }
 
     componentDidMount(){
@@ -40,17 +49,17 @@ export default class Informe extends Component {
         if(this.state._id){
             fetch(`http://localhost:3001/peliculas/${this.state._id}`, {
                 method: 'PUT',
-                body: JSON.stringify({
-                    titulo: this.state.titulo,
-                    categoria: this.state.categoria,
-                    precio: this.state.precio,
-                    resumen: this.state.resumen,
-                    file: this.state.file
-                }),
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    titulo: this.state.titulo,
+                    categorias: this.state.categoria,
+                    valorBoleto: this.state.precio,
+                    resumen: this.state.resumen,
+                    imagen: this.state.imagen
+                })
               })
                 .then(res => res.json())
                 .then(data => {
@@ -61,7 +70,13 @@ export default class Informe extends Component {
 
             fetch("http://localhost:3001/server/newMovie", {
                 method: 'POST',
-                body: JSON.stringify(this.state),
+                body: JSON.stringify({
+                  titulo: this.state.titulo,
+                  categorias: this.state.categorias,
+                  valorBoleto: this.state.valorBoleto,
+                  resumen: this.state.resumen,
+                  foto: this.state.foto
+                }),
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -80,39 +95,62 @@ export default class Informe extends Component {
             }
         }
 
-
     getPeliculas(){
         fetch('http://localhost:3001/server/getMovie')
         .then(res => res.json())
         .then(data => {
             this.setState({peliculas: data});
-            console.log(this.state.peliculas);
+            console.log(data)
         });
     }
 
     editarPelicula(id) {
-        fetch(`http://localhost:3001/peliculas/${id}`)
+      let header = {
+        method: 'POST',
+        body: JSON.stringify({
+          titulo: this.state.titulo,
+          categorias: this.state.categorias,
+          valorBoleto: this.state.valorBoleto,
+          resumen: this.state.resumen,
+          foto: this.state.foto
+        }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+      }
+        fetch(`http://localhost:3001/server/updateMovie`, {})
           .then(res => res.json())
           .then(data => {
             console.log(data);
             this.setState({
-              titulo: data.titulo,
-              categoria: data.categoria,
-              precio: data.precio,
-              resumen: data.resumen,
-              file: data.file,
+              titulo: this.state.titulo,
+              categorias: this.state.categorias,
+              valorBoleto: this.state.valorBoleto,
+              resumen: this.state.resumen,
+              foto: this.state.foto,
               _id: data._id
             });
           });
       }
 
     eliminarPelicula(id){
-        fetch(`http://localhost:3001/peliculas/${id}`, {
+      // this.state.peliculas.forEach((item, i) => {
+      //   if(id == item._id){
+      //     console.log(i)
+      //
+      //   }
+      // });
+
+        fetch(`http://localhost:3001/server/deleteMovie`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'aplication/json'
-            }
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id: id
+            })
         })
         .then(res => res.json())
         .then(data => {
@@ -121,9 +159,6 @@ export default class Informe extends Component {
             this.getPeliculas();
         });
     }
-
-
-
 
     render() {
         return (
@@ -144,7 +179,14 @@ export default class Informe extends Component {
                                 <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" >
                                     CATEGORIA
                             </label>
-                                <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" name="categoria"type="text" onChange={this.handleChange} value={this.state.categoria}placeholder="Ingrese Categoria" />
+                                <select class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" name="categorias" onChange={this.handleChange}>
+                                  <option value="999" >Categoria..</option>
+                                  {
+                                    this.state.categoriasArray.map(item => { return(
+                                      <option value={item}>{item}</option>
+                                    )})
+                                  }
+                                </select>
                             </div>
                             <div class="md:w-1/3 px-3 py-3">
                                 <label class="block uppercase tracking-wide text-black-darker text-xs font-bold mb-2" >
@@ -204,10 +246,10 @@ export default class Informe extends Component {
                                         return (
                                         <tr key={pelicula._id}>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{pelicula.titulo}</td>
-                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{pelicula.categoria}</td>
-                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">${pelicula.precio}</td>
-                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{pelicula.resumen}</td>
-                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><img src={uri + pelicula.file} alt=""/></td>
+                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><input onChange={this.handleChange} value={this.state.categorias} name="categorias" placeholder={pelicula.categorias}></input></td>
+                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><input onChange={this.handleChange} value={this.state.valorBoleto} name="valorBoleto" placeholder={`$${pelicula.valorBoleto}`}></input></td>
+                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><input onChange={this.handleChange} value={this.state.resumen} name="resumen" placeholder={pelicula.resumen}></input></td>
+                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm "><img className="h-auto w-full" src={pelicula.foto} /></td>
                                             <div class="flex" >
                                                 <div class="flex-1 text-green-700  px-2 py-6">
                                                     <button class="uppercase bg-grey-lightest font-bold uppercase text-sm" onClick={() => this.editarPelicula(pelicula._id)} >

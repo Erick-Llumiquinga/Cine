@@ -6,10 +6,13 @@ const port = process.env.PORT || 3001;
 const rutas = require('./controllers/authController');
 const rutasPelicula = require('./controllers/peliculaController');
 const rutasSalas = require('./controllers/salaController');
+const cors = require('cors');
 
+app.use(bodyParser.json({ limit: '500mb', extended: true }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '500mb' }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors())
+
 app.use('/server',rutas);
 app.use('/server',rutasPelicula);
 app.use('/server',rutasSalas);

@@ -69,7 +69,6 @@ export default class Salas extends Component {
                 }
             }
 
-
         getSalas(){
             fetch('http://localhost:3001/server/getMovie')
             .then(res => res.json())
