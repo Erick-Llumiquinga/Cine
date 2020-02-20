@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView, AsyncStorage, } from 'react-native';
-import { Container, Content, Card, CardItem, Body, Item, Label, Input, Button } from 'native-base';
+import { Container, Content, Body, Header, Left, Right, Button, Icon } from 'native-base';
 import { Buffer } from 'buffer';
 import base64 from 'react-native-base64'
 
@@ -76,22 +76,32 @@ export default class Register extends Component {
         catch(error){
             console.log(error);
         }
-        //console.log(JSON.stringify(this.state.salas))
         this.props.navigation.push('Detalle');
     }
 
     render() {
         return (
             <Container>
+              <Header style={{backgroundColor: 'black'}}>
+                <Left>
+                  <Button transparent style={{marginTop: 10,}} onPress={()=>{this.props.navigation.push('Iniciar')}}>
+                    <Icon name='arrow-back' />
+                  </Button>
+                </Left>
+                  <Body>
+                    <Text style={styles.textoHeader}>Cartelera</Text>
+                  </Body>
+                <Right />
+              </Header>
               <ImageBackground source={require('../assets/img/background.jpg')} style={styles.container}>
               <ScrollView>
                 <Content contentContainerStyle={styles.content}>
-                  <Text style={styles.registrar1}>Peliculas en Taquilla</Text>
-                  <View style={styles.headerLeft, styles.titulo}>
+                  <Text style={styles.tituloCartelera}>Peliculas en Taquilla</Text>
+                  <View style={styles.cartelera}>
                   {
                     this.state.peliculas.map(item =>
                       <TouchableOpacity onPress={() => this.localStoragge(JSON.stringify(item))} key={item._id}>
-                        <Text style={{color: 'white'}}>{item.titulo}</Text>
+                        <Text style={styles.titulo}>{item.titulo}</Text>
                         <Image source={{uri: item.foto}} style={styles.logo} />
                       </TouchableOpacity>
                     )
@@ -112,34 +122,31 @@ const styles = StyleSheet.create({
         position: 'relative',
         right: '4%',
     },
-    registrar1: {
+    tituloCartelera: {
         flex: 1,
         width: '100%',
-        marginTop: '45%',
         fontSize: 30,
-        marginLeft: '5%',
+        textAlign: "center",
+        marginTop: '18%',
         color: '#EFFBF8',
     },
     content: {
         flex: 1,
         justifyContent: 'center',
         width: '75%',
-        height: '100%',
         marginLeft: '13%',
-        paddingBottom: '25%',
+        marginBottom: '20%'
     },
-    txt: {
-        color: 'black',
-        fontSize: 15,
-    },
-    textoBlanco: {
-        color: '#ffffff'
+    textoHeader: {
+        marginTop: 10,
+        color: '#ffffff',
+        fontSize: 20
     },
     img: {
         height: '20%',
         width: '30%'
     },
-    titulo: {
+    cartelera: {
         flex: 3,
         alignItems: 'center',
         fontWeight: 'bold'
@@ -148,52 +155,17 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row'
     },
-    headerLeft: {
-        flex: 1,
-
-    },
-    headerRight: {
-        flex: 1,
-
-    },
-    body: {
-        flex: 1,
-        alignItems: 'center'
-    },
     logo: {
         width: 200,
         height: 200,
-        borderRadius: 40,
+        borderRadius: 25,
         resizeMode: 'contain'
     },
-    logo1: {
-        width: 200,
-        height: 200,
-        borderRadius: 40,
-        resizeMode: 'contain'
-    },
-    logo2: {
-        width: 200,
-        height: 200,
-        borderRadius: 40,
-        resizeMode: 'contain'
-    },
-    logo3: {
-        width: 200,
-        height: 200,
-        borderRadius: 40,
-        resizeMode: 'contain'
-    },
-    logo4: {
-        width: 200,
-        height: 200,
-        borderRadius: 40,
-        resizeMode: 'contain'
-    },
-    logo5: {
-        width: 200,
-        height: 200,
-        borderRadius: 40,
-        resizeMode: 'contain'
+    titulo: {
+      textAlign: 'center',
+      color: 'white',
+      fontSize: 17,
+      paddingBottom: 5,
+      paddingTop: 15
     }
 });

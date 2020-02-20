@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Image, Modal, Text, TouchableHighlight, View, Alert, TextInput, FlatList, StyleSheet, ImageBackground, AsyncStorage,TouchableOpacity } from 'react-native';
-import {  Container, Content, Header, Title, Button, Left, Right, Body, Icon, Spinner, Fab, Form,Card,CardItem,Thumbnail   } from 'native-base';
+import { Image, Text, StyleSheet, ImageBackground, AsyncStorage } from 'react-native';
+import {  Container, Content, Header, Button, Left, Right, Body, Icon, Card,CardItem, Label, Input,Item } from 'native-base';
 export default class Home extends Component{
     constructor(props) {
       super(props);
@@ -14,8 +14,8 @@ export default class Home extends Component{
         descripcion: '',
         horario: '',
         precio: '',
-        numBoletos: '',
-        datosPersonales: [],
+        numBoletos: 0,
+        email: '',
         datosSala:[]
       }
     }
@@ -23,6 +23,10 @@ export default class Home extends Component{
     componentDidMount(){
       this.localStoragge();
     }
+
+    handleBoletos = text => {
+      this.setState({ numBoletos: text });
+    };
 
     localStoragge = async () =>{
         try{
@@ -56,208 +60,156 @@ export default class Home extends Component{
       });
 
         this.setState({titulo: datosPelicula.titulo, img: datosPelicula.foto, sinopsis: datosPelicula.resumen, precio: datosPelicula.valorBoleto});
+    }
 
+    postCompra = () => {
+      const API_URL = `http://192.168.100.3:3001/server/getSala`;
+      const header = {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          boletos: this.state.numBoletos,
+          email: this.state.email, 
+          sala: this.state.sala,
+          pelicula: this.state.titulo,
+          horario: this.horario
+        })
+      }
 
-
-      // return fetch(API_URL, header)
-      // .then((response) => response.json())
-      // .then((responseJson) => {
-      //   this.setState({
-      //     sala: JSON.stringify(responseJson).nombre,
-      //     descripcion: JSON.stringify(responseJson).descripcion,
-      //     horario: JSON.stringify(responseJson).horario,
-      //     titulo: JSON.stringify(responseJson).horario,
-      //
-      //   })
-      //
-      //   console.log(this.state)
-      //
-      // })
-      // .catch((err) => {
-      //   alert(err)
-      // })
+      return fetch(API_URL, header)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        alert(responseJson)
+      })
+      .catch((err) => {
+        alert(err)
+      })
     }
 
     render() {
         return (
           <Container>
-           <Content>
-             <Card style={{flex: 0}}>
-               <CardItem>
-                 <Left>
-                   <Body>
-                     <Text>{this.state.titulo}</Text>
-                   </Body>
-                 </Left>
-               </CardItem>
-               <CardItem>
-                 <Body>
-                   <Image source={{uri: this.state.img}} style={{height: 200, width: 200, flex: 1}}/>
-                   <Text>{this.state.sinopsis}</Text>
-                 </Body>
-               </CardItem>
-               <CardItem>
-               <Body>
-                <Text>{this.state.horario}</Text>
-               </Body>
-                 <Right>
-                   <Button  textStyle={{color: '#87838B'}} onPress={() => this.props.navigation.push('Home')}>
-                     <Text>Pedir</Text>
-                   </Button>
-                 </Right>
-               </CardItem>
-             </Card>
-           </Content>
+            <Header style={{backgroundColor: 'black'}}>
+                <Left>
+                  <Button transparent style={{marginTop: 10,}} onPress={this.deleteStoragge}>
+                    <Icon name='arrow-back' />
+                  </Button>
+                </Left>
+                  <Body>
+                    <Text style={styles.textoHeader}>Reservas</Text>
+                  </Body>
+                <Right />
+              </Header>
+              <ImageBackground source={require('../assets/img/background.jpg')} style={styles.container}>
+                <Content transparent>
+                  <Card transparent>
+                    <CardItem style={styles.card}>
+                      <Body style={{alignItems: 'center'}}>
+                        <Text style={{fontSize: 30}}>{this.state.titulo}</Text>
+                      </Body>
+                    </CardItem>
+                    <CardItem style={styles.card}>
+                      <Body style={{alignItems: 'center'}}>
+                        <Image source={{uri: this.state.img}} style={styles.logo}/>
+                        <Label>Sinopsis:</Label>
+                        <Text>{this.state.sinopsis}</Text>
+                      </Body>
+                    </CardItem>
+                    <CardItem style={{backgroundColor: '#c9c7c7a9'}} footer bordered>
+                      <Left>
+                      <Label>Costo: </Label>
+                      <Text>${this.state.precio}</Text>
+                      </Left>
+                    <Body>
+                      <Label>Funcion</Label>
+                      <Text>{this.state.horario}</Text>
+                    </Body>
+                      <Right>
+                        <Label>Nº Boletos</Label>
+                        <Item style={{height: 30, width: 85}}>
+                          <Input onChangeText={this.handleBoletos} style={{textAlign: 'center'}}/>
+                        </Item>
+                      </Right>
+                    </CardItem>
+                    <CardItem style={{backgroundColor: '#c9c7c7a9'}}>
+                      <Body>
+                      <Item floatingLabel >
+                          <Label>Correo</Label>
+                          <Input />
+                        </Item>
+                      </Body>
+                      <Right style={{width: '100%'}}>
+                      <Button rounded success style={{width: '80%'}}>
+                        <Text style={{left: 30, color: 'white'}}>Comprar</Text>
+                      </Button>
+                      </Right>
+                    </CardItem>
+                  </Card>
+                </Content>
+                
+              </ImageBackground>
           </Container>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    containerTabla1: {
-        position: 'absolute',
-        left: '5%',
-        top: '10%',
-        height: '100%',
-        width: '20%'
-    },
-    containerTabla2: {
-        position: 'absolute',
-        left: '21%',
-        top: '10%',
-        height: '100%',
-        width: '20%'
-    },
-    containerTabla3: {
-        position: 'absolute',
-        left: '37%',
-        top: '10%',
-        height: '100%',
-        width: '20%'
-    },
-    containerTabla4: {
-        position: 'absolute',
-        left: '53%',
-        top: '10%',
-        height: '100%',
-        width: '20%'
-    },
-    containerTabla5: {
-        position: 'absolute',
-        left: '69%',
-        top: '10%',
-        height: '100%',
-        width: '20%'
-    },
-    containerTabla6: {
-        position: 'absolute',
-        left: '85%',
-        top: '10%',
-        height: '100%',
-        width: '20%'
-    },
-      container_principal: {
-        marginTop: 20,
-        alignItems: "center",
-        justifyContent: "center"
-      },
-      bola_principal: {
-        backgroundColor: "white",
-        width: 120,
-        height: 120,
-
-        borderRadius: 100,
-        color: "black",
-        textAlign: "center",
-        fontSize: 80
-      },
-      bola_principal_texto: {
-        backgroundColor: "white",
-        width: 120,
-        height: 120,
-        borderRadius: 100,
-        color: "black",
-        textAlign: "center",
-        fontSize: 35,
-        paddingTop: 35
-      },
-      container_secundarias: {
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "row",
-        marginTop: 25,
-      },
-      bola_secundaria: {
-          backgroundColor: "#013440",
-          width: 70,
-          height: 70,
-          borderRadius: 100,
-          marginBottom: 20,
-          marginLeft: 5,
-          color: "white",
-          textAlign: "center",
-          fontSize: 35,
-      },
-      cartilla: {
-        left: '7%',
-        width: '90%',
-        borderRadius: 10
-      },
-      head: {
-          height: 40,
-          backgroundColor: '#BF9D7E',
-        },
-      text: {
-          margin: 6 ,
-          color: 'white',
-          textAlign: "center",
-        },
-    imagen:{
-      width: '104%',
-      height: '100%',
-      position: 'relative',
-      right: '4%',
-    },
-    header:{
-      backgroundColor: '#327373',
-    },
-    bola_tabla:{
-        position: 'relative',
-        top: '10%',
-        left: '20%',
-        backgroundColor: "black",
-        width: 30,
-        height: 30,
-        borderWidth: 2,
-        borderRadius: 100,
-        marginBottom: 3,
-        color: "white",
-        textAlign: "center",
-        fontSize: 17
-    },
-    bola_tabla_W:{
-        position: 'relative',
-        top: '10%',
-        left: '20%',
-        backgroundColor: "white",
-        width: 30,
-        height: 30,
-        borderRadius: 100,
-        marginBottom: 3,
-        color: "black",
-        textAlign: "center",
-        fontSize: 17
-    },
-      textoBlanco: {
-        color: '#ffffff'
-    },
-    input1: {
-        color: '#EFFBF8',
-        fontSize: 25,
-    },
-    modal_position: {
-        position: 'absolute',
-        bottom: 15,
-        left: 25,
-    }
+  container: {
+    width: '105%',
+    height: '100%',
+    position: 'relative',
+    right: '4%',
+},
+tituloCartelera: {
+    flex: 1,
+    width: '100%',
+    fontSize: 30,
+    textAlign: "center",
+    marginTop: '18%',
+    color: '#EFFBF8',
+},
+content: {
+    flex: 1,
+    justifyContent: 'center',
+    width: '75%',
+    marginLeft: '13%',
+    marginBottom: '20%'
+},
+textoHeader: {
+    marginTop: 10,
+    color: '#ffffff',
+    fontSize: 20
+},
+img: {
+    height: '20%',
+    width: '30%'
+},
+cartelera: {
+    flex: 3,
+    alignItems: 'center',
+    fontWeight: 'bold'
+},
+header: {
+    flex: 1,
+    flexDirection: 'row'
+},
+logo: {
+    width: 250,
+    height: 250,
+    borderRadius: 25,
+    resizeMode: 'contain'
+},
+titulo: {
+  textAlign: 'center',
+  color: 'white',
+  fontSize: 17,
+  paddingBottom: 5,
+  paddingTop: 15
+},
+card: {
+  backgroundColor: '#ffffffa9'
+}
 })

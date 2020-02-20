@@ -7,7 +7,7 @@ import Detalle from '../screens/datalle';
 
 
 const screens = {
-    Inicar: {
+    Iniciar: {
         screen: Inicar,
         navigationOptions: {
             headerShown: false 
