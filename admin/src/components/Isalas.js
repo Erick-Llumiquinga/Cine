@@ -13,7 +13,7 @@ export default class Compra extends Component {
     }
 
     getCompras(){
-        fetch('http://localhost:3001/peliculas')
+        fetch('http://localhost:3001/server/getTicket')
         .then(res => res.json())
         .then(data => {
             this.setState({compras: data});
@@ -39,7 +39,7 @@ export default class Compra extends Component {
                                 this.state.compras.map(compra => {
                                     return (
                                         <tr key={compra._id}>
-                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{compra.numeroBoletos}</td>
+                                            <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{compra.totalBoletos}</td>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{compra.email}</td>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{compra.sala}</td>
                                             <td class="py-4 px-10 bg-grey-lightest font-bold uppercase text-sm ">{compra.pelicula}</td>

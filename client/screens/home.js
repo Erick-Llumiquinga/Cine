@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, ImageBackground, Text, Image, View,TouchableOpacity, ScrollView, AsyncStorage, } from 'react-native';
 import { Container, Content, Body, Header, Left, Right, Button, Icon } from 'native-base';
-import { Buffer } from 'buffer';
 import base64 from 'react-native-base64'
 
 export default class Register extends Component {

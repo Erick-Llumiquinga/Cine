@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, Text, StyleSheet, ImageBackground, AsyncStorage } from 'react-native';
+import { Image, Text, StyleSheet, ImageBackground, AsyncStorage, Alert } from 'react-native';
 import {  Container, Content, Header, Button, Left, Right, Body, Icon, Card,CardItem, Label, Input,Item } from 'native-base';
 export default class Home extends Component{
     constructor(props) {
@@ -14,7 +14,8 @@ export default class Home extends Component{
         descripcion: '',
         horario: '',
         precio: '',
-        numBoletos: 0,
+        precioUnitario: '',
+        numBoletos: 1,
         email: '',
         datosSala:[]
       }
@@ -24,8 +25,24 @@ export default class Home extends Component{
       this.localStoragge();
     }
 
+    calcular = () => {
+      let boletos = this.state.numBoletos;
+      let precio = parseFloat(this.state.precioUnitario);
+      let total = precio * boletos;
+      this.setState({precio: total.toFixed(2)})
+      /*Alert.alert('Detalle de Compra',`Compra de ${this.state.numBoletos} boletos para la pelicula ${this.state.titulo}`, [
+        {text: 'Cancelar', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'Comprar', onPress: this.postCompra},
+      ],{cancelable: false})*/
+  }
+
     handleBoletos = text => {
-      this.setState({ numBoletos: text });
+      this.setState({ numBoletos: text })
+      setTimeout(function(){ this.calcular() },3000)
+    };
+
+    handleCorreo = text => {
+      this.setState({ email: text });
     };
 
     localStoragge = async () =>{
@@ -59,11 +76,12 @@ export default class Home extends Component{
         }
       });
 
-        this.setState({titulo: datosPelicula.titulo, img: datosPelicula.foto, sinopsis: datosPelicula.resumen, precio: datosPelicula.valorBoleto});
+        this.setState({titulo: datosPelicula.titulo, img: datosPelicula.foto, sinopsis: datosPelicula.resumen, precioUnitario: datosPelicula.valorBoleto});
     }
 
     postCompra = () => {
-      const API_URL = `http://192.168.100.3:3001/server/getSala`;
+        //this.calcular()
+      const API_URL = `http://192.168.100.3:3001/server/newTicket`;
       const header = {
         method: 'POST',
         headers: {
@@ -71,11 +89,11 @@ export default class Home extends Component{
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          boletos: this.state.numBoletos,
+          totalBoletos: this.state.numBoletos,
           email: this.state.email, 
           sala: this.state.sala,
           pelicula: this.state.titulo,
-          horario: this.horario
+          horario: this.state.horario
         })
       }
 
@@ -83,6 +101,7 @@ export default class Home extends Component{
       .then((response) => response.json())
       .then((responseJson) => {
         alert(responseJson)
+        this.props.navigation.push('Home')
       })
       .catch((err) => {
         alert(err)
@@ -121,7 +140,7 @@ export default class Home extends Component{
                     <CardItem style={{backgroundColor: '#c9c7c7a9'}} footer bordered>
                       <Left>
                       <Label>Costo: </Label>
-                      <Text>${this.state.precio}</Text>
+                      <Text>${this.state.precioUnitario}</Text>
                       </Left>
                     <Body>
                       <Label>Funcion</Label>
@@ -130,19 +149,19 @@ export default class Home extends Component{
                       <Right>
                         <Label>Nº Boletos</Label>
                         <Item style={{height: 30, width: 85}}>
-                          <Input onChangeText={this.handleBoletos} style={{textAlign: 'center'}}/>
+                          <Input onChangeText={this.handleBoletos} type='number' value={this.state.numBoletos} style={{textAlign: 'center'}}/>
                         </Item>
                       </Right>
                     </CardItem>
                     <CardItem style={{backgroundColor: '#c9c7c7a9'}}>
                       <Body>
-                      <Item floatingLabel >
-                          <Label>Correo</Label>
-                          <Input />
-                        </Item>
+                        <Content style={{left: '10%'}}>
+                          <Label>Valor Total:</Label>
+                          <Text style={{textAlign: 'center', fontSize: 17}}>${this.state.precio}</Text>
+                        </Content>
                       </Body>
                       <Right style={{width: '100%'}}>
-                      <Button rounded success style={{width: '80%'}}>
+                      <Button rounded success style={{width: '80%'}} onPress={this.calcular}>
                         <Text style={{left: 30, color: 'white'}}>Comprar</Text>
                       </Button>
                       </Right>
@@ -155,7 +174,12 @@ export default class Home extends Component{
         )
     }
 }
-
+/*
+ <Item floatingLabel >
+                          <Label>Correo</Label>
+                          <Input onChangeText={this.handleCorreo}/>
+                        </Item>
+*/
 const styles = StyleSheet.create({
   container: {
     width: '105%',

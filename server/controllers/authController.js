@@ -20,13 +20,13 @@ routerApi.route('/login')
   .post((req, res) => {
     User.findOne({correo: req.body.correo}, (err, resp) => {
       if(err){
-        return res.json(err);
+        return res.json('Usuario no encontrado');
       }
       else if(req.body.clave === resp.clave){
-        return res.send('Loggeded') 
+        return res.json('Loggeded') 
       }
       else{
-        return res.send("Usuario no encontrado");
+        return res.json("Credenciales Erroneas");
       }
     })
   });

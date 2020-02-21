@@ -5,6 +5,8 @@ import Informe from './components/Informe';
 import Salas from './components/Salas';
 import Peliculas from './components/Peliculas';
 import Isalas from './components/Isalas';
+import Login from './components/login';
+import Register from './components/register';
 import './index.css';
 
 
@@ -12,9 +14,12 @@ import './index.css';
 function App() {
   return (
       <BrowserRouter>
-        <Navigation/>
-        <Route path="/" exact component={Informe} />
+     
+        <Route path="/" exact component={Login} />
+        <Route path="/register" exact component={Register} />
+       <Navigation/>
         <Route path="/peliculas" component={Peliculas} />
+      <Route path="/informe" component={Informe} />
         <Route path="/create" component={Salas} />
         <Route path="/salas" component={Isalas} />
       </BrowserRouter>
