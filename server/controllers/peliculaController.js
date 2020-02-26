@@ -26,6 +26,7 @@ routerApi.route('/getMovie')
   .get((req,res) => {
     Pelicula.find((err,resp) => {
       if(err){
+        console.log('emntro ¡')
         return res.send(err)
       }
       return res.json(resp)
@@ -47,10 +48,9 @@ routerApi.route('/newMovie')
   routerApi.route('/updateMovie')
   .put((req, res) => {
 
-    let id = req.body.id
-    let Query  = req.body
+    let pelicula = req.body
 
-    Pelicula.updateOne({'_id': id}, Query , (err,resp) => {
+    Pelicula.updateOne({'_id': pelicula._id}, pelicula , (err,resp) => {
       if(err){
         return res.json(err);
       }

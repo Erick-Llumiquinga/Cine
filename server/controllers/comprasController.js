@@ -44,6 +44,7 @@ routerApi.route('/newTicket')
       if(err){
         return res.json(err);
         }
+        
         transporter.sendMail(mailOptions, (err, data) => {
             if (err) {
                 return res.json(`Error del servidor: ${ err }`)

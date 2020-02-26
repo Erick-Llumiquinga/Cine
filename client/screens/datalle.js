@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Image, Text, StyleSheet, ImageBackground, AsyncStorage, Alert } from 'react-native';
 import {  Container, Content, Header, Button, Left, Right, Body, Icon, Card,CardItem, Label, Input,Item } from 'native-base';
+import DialogInput from "react-native-dialog-input";
 export default class Home extends Component{
     constructor(props) {
       super(props);
@@ -17,8 +18,11 @@ export default class Home extends Component{
         precioUnitario: '',
         numBoletos: 1,
         email: '',
-        datosSala:[]
+        datosSala:[],
+        isDialogVisible: false  
       }
+
+      this.cerrarAlert = this.cerrarAlert.bind(this)
     }
 
     componentDidMount(){
@@ -30,19 +34,22 @@ export default class Home extends Component{
       let precio = parseFloat(this.state.precioUnitario);
       let total = precio * boletos;
       this.setState({precio: total.toFixed(2)})
-      /*Alert.alert('Detalle de Compra',`Compra de ${this.state.numBoletos} boletos para la pelicula ${this.state.titulo}`, [
-        {text: 'Cancelar', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        {text: 'Comprar', onPress: this.postCompra},
-      ],{cancelable: false})*/
+      return this.setState({isDialogVisible: true})
   }
 
     handleBoletos = text => {
       this.setState({ numBoletos: text })
-      setTimeout(function(){ this.calcular() },3000)
     };
 
-    handleCorreo = text => {
-      this.setState({ email: text });
+    handleCorreo = async (text) => {
+      try{
+        await this.setState({ email: text });
+        this.setState({isDialogVisible: false})  
+      }
+      catch(err){
+        alert(err)
+      }
+      this.postCompra(); 
     };
 
     localStoragge = async () =>{
@@ -80,7 +87,6 @@ export default class Home extends Component{
     }
 
     postCompra = () => {
-        //this.calcular()
       const API_URL = `http://192.168.100.3:3001/server/newTicket`;
       const header = {
         method: 'POST',
@@ -106,6 +112,10 @@ export default class Home extends Component{
       .catch((err) => {
         alert(err)
       })
+    }
+
+    cerrarAlert=()=>{
+      return this.setState({isDialogVisible: false})
     }
 
     render() {
@@ -170,16 +180,18 @@ export default class Home extends Component{
                 </Content>
                 
               </ImageBackground>
+              <DialogInput isDialogVisible={this.state.isDialogVisible} 
+                title='Detalle de Compra'
+                message={`Compra de ${this.state.numBoletos} boletos para la pelicula ${this.state.titulo} con un total de $${this.state.precio}`}
+                hintInput={"@gmail.com"} 
+                submitInput= {(text) => {this.handleCorreo(text)}}
+                closeDialog = {()=> {this.cerrarAlert()}}>
+              </DialogInput>          
           </Container>
         )
     }
 }
-/*
- <Item floatingLabel >
-                          <Label>Correo</Label>
-                          <Input onChangeText={this.handleCorreo}/>
-                        </Item>
-*/
+
 const styles = StyleSheet.create({
   container: {
     width: '105%',

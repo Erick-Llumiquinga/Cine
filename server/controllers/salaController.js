@@ -40,10 +40,9 @@ routerApi.route('/newSala')
   routerApi.route('/updateSala')
   .put((req, res) => {
 
-    let id = req.body.id
-    let Query  = req.body
+    let pelicula = req.body
 
-    Sala.updateOne({'_id': id}, Query , (err,resp) => {
+    Sala.updateOne({'_id': pelicula._id}, pelicula , (err,resp) => {
       if(err){
         return res.json(err);
       }

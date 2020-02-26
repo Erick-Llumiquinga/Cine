@@ -3,7 +3,6 @@ import * as Font from 'expo-font';
 import { StyleSheet, ImageBackground, Text, AsyncStorage } from 'react-native';
 import { Container, Content, Card, CardItem, Body, Item, Label, Input, Button, Spinner } from 'native-base';
 
-const API_URL = "http://192.168.100.5:3000/server/login";
 
 export default class Login extends Component {
 
